@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PlaceableDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://build/placeable_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"bep"
+display_name = "Building entry point"
+node_type = 0
+port_count = 4
+size = Vector3(0.4, 0.5, 0.12)
+color = Color(0.25, 0.35, 0.6, 1)

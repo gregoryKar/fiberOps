@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PlaceableDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://build/placeable_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"splice_closure"
+display_name = "Splice closure"
+node_type = 3
+port_count = 4
+size = Vector3(0.35, 0.15, 0.12)
+color = Color(0.16, 0.16, 0.17, 1)

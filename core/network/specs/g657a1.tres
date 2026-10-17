@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="FiberSpec" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://core/network/fiber_spec.gd" id="1_spec"]
+
+[resource]
+script = ExtResource("1_spec")
+id = &"g657a1"
+display_name = "G.657.A1"
+jacket_color = Color(0.93, 0.93, 0.9, 1)
+bend_ref_radius_1_mm = 7.5
+bend_ref_loss_1_db = 1.2
+bend_ref_radius_2_mm = 15.0
+bend_ref_loss_2_db = 0.025
+min_bend_radius_mm = 10.0
+break_radius_mm = 2.5

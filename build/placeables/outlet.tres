@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PlaceableDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://build/placeable_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"outlet"
+display_name = "Fiber outlet"
+node_type = 5
+port_count = 1
+size = Vector3(0.08, 0.08, 0.03)
+color = Color(0.96, 0.96, 0.96, 1)

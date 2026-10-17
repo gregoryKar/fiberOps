@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bep3ygw1bc8jl"]
+
+[ext_resource type="Script" uid="uid://dlqfn1c3a32f4" path="res://levels/debug/network_demo.gd" id="1_demo"]
+[ext_resource type="PackedScene" path="res://levels/test_floor/test_floor.tscn" id="2_floor"]
+[ext_resource type="Script" uid="uid://7iw5g1crbabs" path="res://debug/network_view.gd" id="3_view"]
+[ext_resource type="Script" uid="uid://djpmt54lurhwk" path="res://debug/trace_overlay.gd" id="4_overlay"]
+
+[node name="NetworkDemo" type="Node3D" unique_id=1336410451]
+script = ExtResource("1_demo")
+
+[node name="TestFloor" parent="." unique_id=1558340006 instance=ExtResource("2_floor")]
+
+[node name="NetworkView" type="Node3D" parent="." unique_id=985909915]
+script = ExtResource("3_view")
+
+[node name="TraceOverlay" type="CanvasLayer" parent="." unique_id=1038339369]
+script = ExtResource("4_overlay")

@@ -1,0 +1,40 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://levels/greybox/greybox_floor.gd" id="1_greybox"]
+[ext_resource type="PackedScene" path="res://player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://levels/props/light_switch.tscn" id="3_switch"]
+[ext_resource type="Script" path="res://build/level_network.gd" id="4_network"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 3
+ambient_light_energy = 0.4
+tonemap_mode = 2
+ssao_enabled = true
+
+[node name="TestFloor" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="Greybox" type="Node3D" parent="."]
+script = ExtResource("1_greybox")
+
+[node name="PlayerStart" type="Marker3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -9, 0, 0)
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -9, 0, 0)
+
+[node name="LightSwitch" parent="." instance=ExtResource("3_switch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5, 1.2, 0.89)
+
+[node name="LevelNetwork" type="Node3D" parent="."]
+script = ExtResource("4_network")
+level_id = &"test_floor"
