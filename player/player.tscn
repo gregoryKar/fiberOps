@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://player/interaction_ray.gd" id="2_ray"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://tools/build_tool.gd" id="5_build"]
 [ext_resource type="Script" path="res://tools/deconstruct_tool.gd" id="6_deconstruct"]
 [ext_resource type="Script" path="res://tools/cable_tool.gd" id="7_cable"]
+[ext_resource type="Script" path="res://tools/otdr_tool.gd" id="8_otdr"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.3
@@ -49,6 +50,10 @@ tool_id = &"deconstruct"
 [node name="CableTool" type="Node" parent="ToolBelt"]
 script = ExtResource("7_cable")
 tool_id = &"cable"
+
+[node name="OtdrTool" type="Node" parent="ToolBelt"]
+script = ExtResource("8_otdr")
+tool_id = &"otdr"
 
 [node name="Hud" type="CanvasLayer" parent="." node_paths=PackedStringArray("player")]
 script = ExtResource("4_hud")

@@ -146,7 +146,7 @@ Input: start (node, port, fiber), wavelength, pulse width, range, averaging time
 | M4 ✅ | Cable routing | Waypoint routing, fillet geometry, tube mesh, live bend/loss preview, port connections |
 | M5 ✅ | Splice tray editor | Fiber colour mapping UI creating Links |
 | M6 | Splicing minigame | All steps, quality → splice loss written to Link |
-| M7 | OTDR | Simulator + trace UI + event table + 1310/1550, unit tests on events |
+| M7 ✅ | OTDR | Simulator + trace UI + event table + 1310/1550, unit tests on events |
 | M8 | Drill & screw minigame | Mounting flow, mounted_quality |
 | M9 | Multi-level + save/load | Per-floor networks, riser stubs, cross-level tracing, persistence |
 | M10 | Work orders & polish | Job briefs, loss budgets, scoring, power meter, VFL, audio |
