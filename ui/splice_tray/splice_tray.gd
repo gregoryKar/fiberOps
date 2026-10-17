@@ -43,16 +43,35 @@ func close() -> void:
 
 func _ready() -> void:
 	layer = 10
+	model.use_splicer = true
+	model.splice_requested.connect(_start_splicer)
 	_build_ui()
 	model.changed.connect(_refresh)
 	_refresh()
 
+
+## Hides the tray while the splicing minigame runs, then stores (or drops) its result.
+func _start_splicer(from: Vector2i, to: Vector2i) -> SpliceMinigame:
+	var specs := model.specs_for(from, to)
+	var title := "%s  →  %s" % [SpliceTrayModel.fiber_label(from.x, from.y), SpliceTrayModel.fiber_label(to.x, to.y)]
+	var minigame := SpliceMinigame.open(get_parent(), SpliceJob.new(specs[0], specs[1]), from.y, to.y, title)
+	visible = false
+	minigame.finished.connect(func(job: SpliceJob) -> void:
+		visible = true
+		model.complete_splice(from, to, job))
+	minigame.cancelled.connect(func() -> void:
+		visible = true
+		model.message = "Splice aborted."
+		_refresh())
+	return minigame
 
 func _process(_delta: float) -> void:
 	_lines.queue_redraw()
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not visible:
+		return
 	if event.is_action_pressed(&"cancel") or event.is_action_pressed(&"interact"):
 		close()
 		get_viewport().set_input_as_handled()
@@ -153,9 +172,9 @@ func _refresh() -> void:
 
 	for link in model.node.links:
 		var row := Label.new()
-		row.text = "%s ↔ %s  %.2f dB" % [
+		row.text = "%s ↔ %s  %s" % [
 			SpliceTrayModel.fiber_label(link.port_a, link.fiber_a),
-			SpliceTrayModel.fiber_label(link.port_b, link.fiber_b), link.loss_db]
+			SpliceTrayModel.fiber_label(link.port_b, link.fiber_b), SpliceTrayModel.loss_label(link)]
 		if link == model.selected_link:
 			row.modulate = Color(1.0, 0.85, 0.3)
 		_splices_box.add_child(row)

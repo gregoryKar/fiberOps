@@ -13,6 +13,16 @@ enum Kind { FUSION_SPLICE, MECHANICAL_SPLICE, CONNECTOR, SPLITTER_LEG }
 @export var loss_db := LossModel.DEFAULT_FUSION_SPLICE_DB
 ## Only meaningful for connectors.
 @export var reflectance_db := LossModel.UPC_REFLECTANCE_DB
+## What the fusion splicer reported (NAN if not made with the splicer). The true loss
+## above is what the light, and the OTDR, actually sees.
+@export var estimated_loss_db := NAN
+## False when the splice was left without a heat-shrink sleeve.
+@export var protected := true
+
+
+## The loss a technician can read without an OTDR: the splicer estimate when there is one.
+func displayed_loss_db() -> float:
+	return loss_db if is_nan(estimated_loss_db) else estimated_loss_db
 
 
 static func create(link_kind: Kind, pa: int, fa: int, pb: int, fb: int, loss := NAN) -> NetLink:

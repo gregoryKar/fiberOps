@@ -2,9 +2,13 @@ class_name SpliceTrayModel
 extends RefCounted
 ## Editing logic behind the splice tray screen, kept apart from the UI so it can be tested.
 ## The player clicks a fiber end to select it, then another to splice the two. Clicking a
-## spliced fiber selects its splice so it can be cut.
+## spliced fiber selects its splice so it can be cut. With use_splicer on, the second click
+## asks for the splicing minigame instead (splice_requested); its result comes back through
+## complete_splice().
 
 signal changed
+## The player picked two fibers to splice and the splicer should run.
+signal splice_requested(from: Vector2i, to: Vector2i)
 
 enum FiberState { FREE, SPLICED, SPLITTER }
 
@@ -18,6 +22,8 @@ var selected_end := Vector2i(-1, -1)
 var selected_link: NetLink
 ## Feedback line for the player.
 var message := ""
+## Splices go through the splicing minigame (the tray screen turns this on).
+var use_splicer := false
 
 
 func _init(target_network: FiberNetwork, node_id: StringName) -> void:
@@ -68,9 +74,14 @@ func click_fiber(port: int, fiber: int) -> NetLink:
 		changed.emit()
 		return null
 
-	var link := node.add_splice(selected_end.x, selected_end.y, port, fiber)
 	var from := selected_end
 	selected_end = Vector2i(-1, -1)
+	if use_splicer:
+		message = "Splicing %s to %s…" % [fiber_label(from.x, from.y), fiber_label(port, fiber)]
+		changed.emit()
+		splice_requested.emit(from, Vector2i(port, fiber))
+		return null
+	var link := node.add_splice(from.x, from.y, port, fiber)
 	if link:
 		message = "Spliced %s to %s (%.2f dB)." % [fiber_label(from.x, from.y), fiber_label(port, fiber), link.loss_db]
 		_network_edited()
@@ -78,6 +89,31 @@ func click_fiber(port: int, fiber: int) -> NetLink:
 		message = "Can't splice those fibers."
 	changed.emit()
 	return link
+
+
+## Stores the splice made in the splicer between two fiber ends.
+func complete_splice(from: Vector2i, to: Vector2i, job: SpliceJob) -> NetLink:
+	var link := node.add_splice(from.x, from.y, to.x, to.y, job.true_loss_db)
+	if link == null:
+		message = "Can't splice those fibers."
+		changed.emit()
+		return null
+	link.estimated_loss_db = job.estimated_loss_db
+	link.protected = job.protected
+	message = "Spliced %s to %s. Splicer estimate %.2f dB%s." % [fiber_label(from.x, from.y),
+			fiber_label(to.x, to.y), job.estimated_loss_db, "" if job.protected else ", NO SLEEVE"]
+	_network_edited()
+	changed.emit()
+	return link
+
+
+## Specs of the two fibers to splice (left = from, right = to).
+func specs_for(from: Vector2i, to: Vector2i) -> Array[FiberSpec]:
+	var result: Array[FiberSpec] = []
+	for end in [from, to]:
+		var cable := network.cable_at(node.id, end.x)
+		result.append(cable.spec() if cable else FiberSpec.get_spec(&"g657a1"))
+	return result
 
 
 ## Cuts the selected splice. A splitter leg takes the whole splitter with it.
@@ -133,8 +169,14 @@ func add_splitter(ratio: int) -> Array[NetLink]:
 
 func describe(link: NetLink) -> String:
 	var kind := "splitter leg" if link.kind == NetLink.Kind.SPLITTER_LEG else "fusion splice"
-	return "%s ↔ %s   %s %.2f dB   [Cut] to remove" % [
-		fiber_label(link.port_a, link.fiber_a), fiber_label(link.port_b, link.fiber_b), kind, link.loss_db]
+	return "%s ↔ %s   %s %s   [Cut] to remove" % [
+		fiber_label(link.port_a, link.fiber_a), fiber_label(link.port_b, link.fiber_b), kind, loss_label(link)]
+
+
+## "0.03 dB est." for splicer splices, plain loss otherwise, plus a no-sleeve warning.
+static func loss_label(link: NetLink) -> String:
+	var text := "%.2f dB%s" % [link.displayed_loss_db(), "" if is_nan(link.estimated_loss_db) else " est."]
+	return text if link.protected else text + "  ⚠ no sleeve"
 
 
 ## Where the cable on a port goes: "→ Fiber outlet node_5 · 2 × G.657.A1 · 4.30 m".
